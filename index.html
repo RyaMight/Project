@@ -599,7 +599,8 @@ function sendOrderEmail() {
     
     let orderDetails = cart.map(item => `${item.item} (${item.category}) - Rp${item.price}`).join("\n");
     let totalAmount = `Total: Rp${total}`;
-    
+    let changeAmount = paidAmount - total;
+
     let templateParams = {
         to_email: "2601aryasaputra@gmail.com", // Ganti dengan email tujuan
         subject: `Pesanan Baru dari ${customerName}`,
