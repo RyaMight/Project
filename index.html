@@ -603,7 +603,7 @@ function sendOrderEmail() {
     let templateParams = {
         to_email: "2601aryasaputra@gmail.com", // Ganti dengan email tujuan
         subject: `Pesanan Baru dari ${customerName}`,
-        message: `Nama Pemesan: ${customerName}\n\nPesanan:\n${orderDetails}\n\n${totalAmount}`
+        message: `Nama Pemesan: ${customerName}\n\nPesanan:\n${orderDetails}\n\n${totalAmount}\nUang Dibayarkan: Rp${paidAmount}\nKembalian: Rp${changeAmount}`
     };
 
     emailjs.send("service_nlo8reg", "template_8vb2k3a", templateParams)
