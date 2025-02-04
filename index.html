@@ -592,11 +592,19 @@
         emailjs.init("-p_jcfsJXSZqjZAAu"); // Ganti dengan Public Key dari EmailJS
 function sendOrderEmail() {
     const customerName = document.getElementById("customerName").value.trim();
+    let paidAmount = parseInt(document.getElementById("paidAmount").value) || 0;
+
     if (!customerName) {
         showNotification("Silakan masukkan nama pemesan!");
         return;
     }
-    
+
+    if (paidAmount < total) {
+        showNotification("Jumlah uang kurang, silakan masukkan jumlah yang cukup.");
+        return;
+    }
+
+    let changeAmount = paidAmount - total;
     let orderDetails = cart.map(item => `${item.item} (${item.category}) - Rp${item.price}`).join("\n");
     let totalAmount = `Total: Rp${total}`;
 
@@ -615,7 +623,7 @@ function sendOrderEmail() {
         });
 }
 
-// Panggil fungsi ini saat checkout berhasil
+// Fungsi untuk konfirmasi checkout
 function confirmCheckout() {
     let confirmation = confirm("Apakah Anda yakin ingin melanjutkan pesanan?");
     if (confirmation) {
