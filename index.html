@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <title>Web Pesanan Makanan</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #000, #111, #000);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            color: #fff;
+            box-sizing: border-box;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        header {
+            background-color: #111;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        header h1 {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        nav a {
+            margin: 0 1rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #bbb;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .menu-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #444;
+            border-radius: 12px;
+            background-color: #111;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+
+        .menu-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+            background-color: #222;
+        }
+
+        .menu-item img {
+            border-radius: 8px;
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:hover {
+            background-color: #666;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #111;
+            color: white;
+            margin-top: 2rem;
+        }
+
+        #cart {
+            list-style: none;
+            padding: 0;
+        }
+
+        #cart li {
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background-color: #111;
+            border: 1px solid #444;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        #cart li button {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #cart li button:hover {
+            background-color: #cc0000;
+        }
+
+        #savedDataContainer {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #111;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-content {
+            background-color: #111;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            width: 400px;
+            box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+        }
+
+        .modal button {
+            margin: 10px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #444;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal button:hover {
+            background-color: #666;
+        }
+
+        .Tengah {
+            text-align: center;
+        }
+
+        /* Input styling */
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #444;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: #111;
+            color: white;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            border-color: #fff;
+        }
+
+        /* Notification styling */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #444;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            animation: slideIn 0.5s ease-in-out, fadeOut 0.5s ease-in-out 2.5s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu-item {
+                padding: 1rem;
+            }
+
+            .modal-content {
+                width: 90%;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body onload="loadCart()">
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+    </div>
+    <header>
+        <h1>Pemesanan Makanan</h1>
+        <nav>
+            <a href="#menu">Menu</a>
+            <a href="#pesan">Pesan Sekarang</a>
+            <button id="login" onclick="login()">Login (Dev)</button>
+        </nav>
+    </header>
+    <main>
+        <section id="menu">
+
+            <div>
+                <label for="topping">Pilih Topping:</label>
+                <select id="topping">
+                    <option value="Tanpa Topping">Tanpa Topping</option>
+                    <option value="Keju">Keju</option>
+                    <option value="Coklat">Coklat</option>
+                    <option value="Coklat Cookies">Coklat Cookies</option>
+                    <option value="Matcha Bubuk">Matcha Bubuk</option>
+                </select>
+            </div>
+
+            <h2>Menu Makanan dan Minuman</h2>
+            <!-- Filter by category -->
+            <label for="categoryFilter">Filter Kategori:</label>
+            <select id="categoryFilter" onchange="filterByCategory()">
+                <option value="all">Semua Kategori</option>
+                <option value="Makanan">Makanan</option>
+                <option value="Minuman">Minuman</option>
+            </select>
+
+            <!-- Menu items -->
+            <div class="menu-item" data-category="Makanan">
+                <img src="Makanan.png" alt="Coming Soon">
+                <h3>BIEBIEGAN</h3>
+                <p>Kategori: Makanan</p>
+                <p>Harga: Rp7.000</p>
+                <label for="quantity-1">Jumlah:</label>
+                <input type="number" id="quantity-1" min="1" value="1">
+                <button onclick="addToCart('Biebiegan', 7000, 'Makanan', parseInt(document.getElementById('quantity-1').value))">Tambah ke Keranjang</button>
+            </div>
+            <div class="menu-item" data-category="Minuman">
+                <img src="Minuman.png" alt="Coming Soon">
+                <h3>MOOMOPUT</h3>
+                <p>Kategori: Minuman</p>
+                <p>Harga: Rp7.000</p>
+                <label for="quantity-2">Jumlah:</label>
+                <input type="number" id="quantity-3" min="1" value="1">
+                <button onclick="addToCart('Moomoput', 7000, 'Minuman', parseInt(document.getElementById('quantity-3').value))">Tambah ke Keranjang</button>
+            </div>
+        </section>
+        <div class="Tengah">
+            <section id="pesan">
+                <h2>Keranjang Pesanan</h2>
+                <label for="customerName">Nama Pemesan:</label>
+                <input type="text" id="customerName" placeholder="Masukkan nama Anda" required>
+                <ul id="cart"></ul>
+                <p>Total: Rp<span id="total">0</span></p>
+                <!-- Fitur Kembalian -->
+                <label for="amountPaid">Jumlah Uang Dibayar:</label>
+                <input type="number" id="amountPaid" placeholder="Masukkan jumlah uang">
+                <p>Kembalian: Rp<span id="change">0</span></p>
+                <button onclick="calculateChange()">Hitung Kembalian</button>
+                <button onclick="checkout()">Pesan Sekarang</button>
+            </section>
+        </div>
+        <section id="pendingOrdersContainer">
+            <h2>Pesanan Pending</h2>
+            <button onclick="showPendingOrders()">Lihat Pesanan Pending</button>
+            <ul id="pendingOrders"></ul>
+        </section>
+        <section id="savedDataContainer">
+            <h2>Data Pesanan Tersimpan</h2>
+            <button onclick="showSavedData()">Lihat Data Tersimpan</button>
+            <ul id="savedData"></ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Rya Saputra. All rights reserved.</p>
+    </footer>
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <h2>Konfirmasi Pesanan</h2>
+            <ul id="modalCartList"></ul>
+            <p>Total: Rp<span id="modalTotal">0</span></p>
+            <p>Kembalian: Rp<span id="modalChange">0</span></p>
+            <button onclick="confirmCheckout()">Ya, Lanjutkan</button>
+            <button onclick="closeModal()">Batal</button>
+            <button onclick="savePendingOrder()">Simpan sebagai Pending</button>
+        </div>
+    </div>
+    <script>
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let total = cart.reduce((sum, item) => sum + item.price, 0);
+        let isDev = false;
+
+        // Fungsi untuk menambahkan item ke keranjang
+        function addToCart(item, price, category, quantity = 1) {
+            const topping = document.getElementById("topping").value;
+            let toppingPrice = 0;
+            
+            switch (topping) {
+                case "Keju": toppingPrice = 0; break;
+                case "Coklat": toppingPrice = 0; break;
+                case "Coklat Cookies": toppingPrice = 0; break;
+                case "Matcha Bubuk": toppingPrice = 0; break;
+                case "Tanpa Topping": toppingPrice = 0; break;
+            }
+            
+            const finalPrice = price + toppingPrice;
+    const itemName = topping === "Tanpa Topping" ? item : `${item} + ${topping}`;
+
+    // Cek apakah item sudah ada di keranjang
+    const existingItem = cart.find(entry => entry.item === itemName);
+
+    if (existingItem) {
+        showNotification(`Item "${itemName}" sudah ada di keranjang! Pilih "Tanpa Topping" jika tidak ingin tambahan.`);
+        return;
+    }
+
+    for (let i = 0; i < quantity; i++) {
+        cart.push({ item: itemName, price: finalPrice, category });
+        total += finalPrice;
+    }
+
+    updateCart();
+    showNotification(`${itemName} (x${quantity}) ditambahkan ke keranjang!`);
+}
+        
+        function updateCart() {
+            console.log("Keranjang diperbarui:", cart);
+        }
+        
+        function showNotification(message) {
+            alert(message);
+        }
+
+        // Fungsi untuk menghapus item dari keranjang
+        function removeFromCart(index) {
+            const cartItem = document.querySelector(`#cart li:nth-child(${index + 1})`);
+            cartItem.style.animation = "fadeOut 0.3s ease-in-out";
+            setTimeout(() => {
+                total -= cart[index].price;
+                cart.splice(index, 1);
+                saveCart();
+                updateCart();
+                showNotification("Item dihapus dari keranjang!");
+            }, 300);
+        }
+
+        // Fungsi untuk menyimpan keranjang ke localStorage
+        function saveCart() {
+            localStorage.setItem("cart", JSON.stringify(cart));
+        }
+
+        // Fungsi untuk memuat keranjang saat halaman dimuat
+        function loadCart() {
+            updateCart();
+        }
+
+        // Fungsi untuk memperbarui tampilan keranjang
+        function updateCart() {
+            const cartList = document.getElementById("cart");
+            const totalElement = document.getElementById("total");
+            cartList.innerHTML = "";
+
+            cart.forEach((entry, index) => {
+                let li = document.createElement("li");
+                li.textContent = `${entry.item} - Rp${entry.price}`;
+                let removeButton = document.createElement("button");
+                removeButton.textContent = "Hapus";
+                removeButton.onclick = () => removeFromCart(index);
+                li.appendChild(removeButton);
+                cartList.appendChild(li);
+            });
+
+            totalElement.textContent = total;
+        }
+
+        // Fungsi untuk menghitung kembalian
+        function calculateChange() {
+            const amountPaid = parseFloat(document.getElementById("amountPaid").value);
+            if (isNaN(amountPaid) || amountPaid < total) {
+                showNotification("Jumlah uang tidak valid atau kurang dari total!");
+                return;
+            }
+            const change = amountPaid - total;
+            document.getElementById("change").textContent = change;
+            document.getElementById("modalChange").textContent = change;
+        }
+
+        // Fungsi untuk menampilkan notifikasi
+        function showNotification(message) {
+            const notification = document.createElement("div");
+            notification.className = "notification";
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // Fungsi untuk checkout
+        function checkout() {
+            const customerName = document.getElementById("customerName").value.trim();
+            if (cart.length === 0) {
+                showNotification("Keranjang masih kosong! Tambahkan makanan terlebih dahulu.");
+                return;
+            }
+            if (!customerName) {
+                showNotification("Silakan masukkan nama pemesan!");
+                return;
+            }
+
+            showCheckoutModal(customerName);
+        }
+
+        // Fungsi untuk menampilkan modal checkout
+        function showCheckoutModal(customerName) {
+            const modal = document.getElementById("checkoutModal");
+            const modalCartList = document.getElementById("modalCartList");
+            const modalTotal = document.getElementById("modalTotal");
+
+            modalCartList.innerHTML = "";
+
+            cart.forEach(item => {
+                let li = document.createElement("li");
+                li.textContent = `${item.item} (${item.category}) - Rp${item.price}`;
+                modalCartList.appendChild(li);
+            });
+
+            modalTotal.textContent = total;
+
+            // Tambahkan nama pemesan ke modal
+            let customerInfo = document.createElement("p");
+            customerInfo.textContent = `Pemesan: ${customerName}`;
+            modalCartList.appendChild(customerInfo);
+
+            modal.style.display = "flex";
+        }
+
+        // Fungsi untuk menutup modal
+        function closeModal() {
+            const modal = document.getElementById("checkoutModal");
+            modal.style.display = "none";
+        }
+
+        // Fungsi untuk konfirmasi checkout
+        function confirmCheckout() {
+            const customerName = document.getElementById("customerName").value.trim();
+            let confirmation = confirm("Apakah Anda yakin ingin melanjutkan pesanan?");
+            if (confirmation) {
+                showNotification("Pesanan berhasil dikirim! Terima kasih.");
+                saveOrder(customerName); // Simpan pesanan dengan nama pemesan
+                cart = [];
+                total = 0;
+                saveCart();
+                updateCart();
+                closeModal();
+            } else {
+                closeModal();
+            }
+        }
+
+        // Fungsi untuk menyimpan pesanan
+        function saveOrder(customerName) {
+            let savedOrders = JSON.parse(localStorage.getItem("savedOrders")) || [];
+            let order = {
+                date: new Date().toLocaleString(),
+                customerName: customerName, // Simpan nama pemesan
+                items: cart,
+                total: total
+            };
+            savedOrders.push(order);
+            localStorage.setItem("savedOrders", JSON.stringify(savedOrders));
+        }
+
+        // Fungsi untuk menampilkan data tersimpan
+        function showSavedData() {
+            if (!isDev) {
+                showNotification("Hanya developer yang bisa melihat data pesanan.");
+                return;
+            }
+
+            let savedOrders = JSON.parse(localStorage.getItem("savedOrders")) || [];
+            let savedDataList = document.getElementById("savedData");
+            savedDataList.innerHTML = "";
+
+            if (savedOrders.length === 0) {
+                savedDataList.innerHTML = "<li>Belum ada pesanan tersimpan.</li>";
+                return;
+            }
+
+            savedOrders.forEach((order, index) => {
+                let orderDate = document.createElement("li");
+                orderDate.innerHTML = `<strong>Pesanan ${index + 1} - ${order.date}</strong><br>Pemesan: ${order.customerName}`;
+                savedDataList.appendChild(orderDate);
+
+                order.items.forEach((entry) => {
+                    let li = document.createElement("li");
+                    li.textContent = `${entry.item} (${entry.category}) - Rp${entry.price}`;
+                    savedDataList.appendChild(li);
+                });
+
+                let totalLi = document.createElement("li");
+                totalLi.innerHTML = `<strong>Total: Rp${order.total}</strong>`;
+                savedDataList.appendChild(totalLi);
+
+                let deleteButton = document.createElement("button");
+                deleteButton.textContent = "Hapus Pesanan";
+                deleteButton.onclick = () => deleteOrder(index);
+                savedDataList.appendChild(deleteButton);
+            });
+        }
+
+        // Fungsi untuk menghapus pesanan
+        function deleteOrder(index) {
+            let savedOrders = JSON.parse(localStorage.getItem("savedOrders")) || [];
+            savedOrders.splice(index, 1);
+            localStorage.setItem("savedOrders", JSON.stringify(savedOrders));
+            showSavedData();
+        }
+
+        // Fungsi untuk login developer
+        function login() {
+            if (isDev) {
+                isDev = false;
+                document.getElementById("login").textContent = "Login (Dev)";
+                document.getElementById("savedData").style.display = "none";
+                showNotification("Anda telah logout.");
+            } else {
+                const password = prompt("Masukkan password untuk login sebagai developer:");
+                if (password === "dev123") {
+                    isDev = true;
+                    document.getElementById("login").textContent = "Logout (Dev)";
+                    document.getElementById("savedData").style.display = "block";
+                } else {
+                    showNotification("Password salah!");
+                }
+            }
+        }
+
+        // Animasi loading saat halaman dimuat
+        window.addEventListener("load", function () {
+            const loading = document.getElementById("loading");
+            loading.style.display = "none";
+        });
+
+        emailjs.init("-p_jcfsJXSZqjZAAu"); // Ganti dengan Public Key dari EmailJS
+function sendOrderEmail() {
+    const customerName = document.getElementById("customerName").value.trim();
+    
+    if (!customerName) {
+        showNotification("Silakan masukkan nama pemesan!");
+        return;
+    }
+
+    if (cart.length === 0) {
+        showNotification("Keranjang masih kosong! Tambahkan makanan terlebih dahulu.");
+        return;
+    }
+
+    // Ambil jumlah yang dibayar oleh customer
+    const amountPaid = parseFloat(document.getElementById("amountPaid").value.trim());
+    if (isNaN(amountPaid) || amountPaid < total) {
+        showNotification("Jumlah yang dibayarkan kurang dari total pesanan!");
+        return;
+    }
+
+    // Hitung kembalian
+    const change = amountPaid - total;
+
+    // Format order details
+    let orderDetails = cart.map(item => {
+        return `${item.item} (${item.category}) - Rp${item.price} x ${item.quantity}`;
+    }).join("\n");
+    let totalAmount = `Rp${total}`;
+    let changeAmount = `Kembalian: Rp${change.toFixed(2)}`;
+
+    let templateParams = {
+        to_email: "2601aryasaputra@gmail.com", // Ganti dengan email tujuan
+        subject: `Pesanan Baru dari ${customerName}`,
+        customer_name: customerName,
+        order_details: orderDetails,
+        total_amount: totalAmount,
+        change_amount: changeAmount
+    };
+
+    emailjs.send("service_nlo8reg", "template_8vb2k3a", templateParams)
+        .then(() => {
+            showNotification("Pesanan berhasil dikirim ke email!");
+            cart = []; // Kosongkan keranjang setelah berhasil mengirim
+            total = 0;
+            saveCart();
+            updateCart();
+            closeModal();
+        })
+        .catch(error => {
+            console.error("Email gagal dikirim:", error);
+            showNotification("Terjadi kesalahan saat mengirim email.");
+        });
+}
+
+// Panggil fungsi ini saat checkout berhasil
+function confirmCheckout() {
+    const customerName = document.getElementById("customerName").value.trim();
+    let confirmation = confirm("Apakah Anda yakin ingin melanjutkan pesanan?");
+    
+    if (confirmation) {
+        showNotification("Pesanan berhasil dikirim! Terima kasih.");
+        saveOrder(customerName);
+        sendOrderEmail(); // Kirim email pesanan
+    } else {
+        closeModal();
+    }
+}
+function savePendingOrder() {
+    const customerName = document.getElementById("customerName").value.trim();
+    if (!customerName) {
+        showNotification("Silakan masukkan nama pemesan sebelum menyimpan sebagai pending!");
+        return;
+    }
+
+    if (cart.length === 0) {
+        showNotification("Keranjang kosong! Tambahkan makanan ke keranjang terlebih dahulu.");
+        return;
+    }
+
+    let pendingOrders = JSON.parse(localStorage.getItem("pendingOrders")) || [];
+    let order = {
+        date: new Date().toLocaleString(),
+        customerName: customerName,
+        items: cart,
+        total: total
+    };
+    pendingOrders.push(order);
+    localStorage.setItem("pendingOrders", JSON.stringify(pendingOrders));
+
+    showNotification("Pesanan berhasil disimpan sebagai pending!");
+    cart = [];
+    total = 0;
+    saveCart();
+    updateCart();
+}
+
+function showPendingOrders() {
+    let pendingOrders = JSON.parse(localStorage.getItem("pendingOrders")) || [];
+    let pendingOrdersContainer = document.getElementById("pendingOrders");
+    pendingOrdersContainer.innerHTML = "";
+
+    if (pendingOrders.length === 0) {
+        pendingOrdersContainer.innerHTML = "<p>Tidak ada pesanan pending.</p>";
+        return;
+    }
+
+    pendingOrders.forEach((order, index) => {
+        let orderDiv = document.createElement("div");
+        orderDiv.className = "pending-order";
+
+        let orderHeader = document.createElement("h3");
+        orderHeader.textContent = `Pesanan ${index + 1} - ${order.date}`;
+        orderDiv.appendChild(orderHeader);
+
+        let customerInfo = document.createElement("p");
+        customerInfo.textContent = `Pemesan: ${order.customerName}`;
+        orderDiv.appendChild(customerInfo);
+
+        let noteInfo = document.createElement("p");
+        noteInfo.textContent = `Catatan: ${order.note || "Tidak ada catatan"}`;
+        orderDiv.appendChild(noteInfo);
+
+        let itemList = document.createElement("ul");
+        order.items.forEach(item => {
+            let itemLi = document.createElement("li");
+            itemLi.textContent = `${item.item} (${item.category}) - Rp${item.price}`;
+            itemList.appendChild(itemLi);
+        });
+        orderDiv.appendChild(itemList);
+
+        let totalInfo = document.createElement("p");
+        totalInfo.innerHTML = `<strong>Total: Rp${order.total}</strong>`;
+        orderDiv.appendChild(totalInfo);
+
+        let buttonGroup = document.createElement("div");
+        buttonGroup.className = "button-group";
+
+        let restoreButton = document.createElement("button");
+        restoreButton.textContent = "Pulihkan Pesanan";
+        restoreButton.onclick = () => restorePendingOrder(index);
+        buttonGroup.appendChild(restoreButton);
+
+        let deleteButton = document.createElement("button");
+        deleteButton.textContent = "Hapus Pesanan";
+        deleteButton.onclick = () => deletePendingOrder(index);
+        buttonGroup.appendChild(deleteButton);
+
+        orderDiv.appendChild(buttonGroup);
+        pendingOrdersContainer.appendChild(orderDiv);
+    });
+}
+function clearCart() {
+    cart = [];
+    total = 0;
+    document.getElementById("sellerNote").value = ""; // Reset catatan
+    saveCart();
+    updateCart();
+}
+    </script>
+</body>
+</html>
