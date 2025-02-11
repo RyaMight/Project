@@ -787,6 +787,19 @@ function clearCart() {
     saveCart();
     updateCart();
 }
+        function restorePendingOrder(index) {
+    let pendingOrders = JSON.parse(localStorage.getItem("pendingOrders")) || [];
+    if (index < pendingOrders.length) {
+        const order = pendingOrders[index];
+        cart = order.items;
+        total = order.total;
+        saveCart();
+        updateCart();
+        showNotification("Pesanan berhasil dipulihkan ke keranjang!");
+    } else {
+        showNotification("Pesanan tidak ditemukan.");
+    }
+}
     </script>
 </body>
 </html>
