@@ -800,6 +800,18 @@ function clearCart() {
         showNotification("Pesanan tidak ditemukan.");
     }
 }
+        function deletePendingOrder(index) {
+    let pendingOrders = JSON.parse(localStorage.getItem("pendingOrders")) || [];
+    if (index < pendingOrders.length) {
+        pendingOrders.splice(index, 1); // Hapus pesanan dari array
+        localStorage.setItem("pendingOrders", JSON.stringify(pendingOrders)); // Simpan kembali ke localStorage
+        showPendingOrders(); // Perbarui tampilan daftar pesanan pending
+        showNotification("Pesanan berhasil dihapus!");
+    } else {
+        showNotification("Pesanan tidak ditemukan.");
+    }
+}
+
     </script>
 </body>
 </html>
