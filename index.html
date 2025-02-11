@@ -812,6 +812,12 @@ function clearCart() {
     }
 }
 console.log(JSON.parse(localStorage.getItem("pendingOrders")));
+        function deletePendingOrder(index) {
+    console.log("Index:", index);
+    let pendingOrders = JSON.parse(localStorage.getItem("pendingOrders")) || [];
+    console.log("Pending Orders:", pendingOrders);
+    // ...lanjutkan dengan logika penghapusan
+}
     </script>
 </body>
 </html>
